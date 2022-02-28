@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/item_menu_1"
+        android:title="Employee"
+        android:tooltipText="Employee"
+        android:orderInCategory="10"
+        android:icon="@mipmap/ic_baseline_group_emp_24_round"
+        app:showAsAction="always">
+        <!-- "file" submenu -->
+        <menu>
+            <item android:id="@+id/sub_menu_11"
+                android:title="List Employee"
+                android:tooltipText="List Employee"
+                android:orderInCategory="11"
+                android:icon="@mipmap/ic_baseline_group_emp_24_round"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sub_menu_12"
+                android:title="Add Employee"
+                android:tooltipText="Add Employee"
+                android:orderInCategory="12"
+                android:icon="@mipmap/ic_baseline_group_emp_add_24_round"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sub_menu_13"
+                android:title="List Contact"
+                android:tooltipText="List Contact"
+                android:orderInCategory="13"
+                android:icon="@mipmap/ic_baseline_group_emp_24_round"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sub_menu_14"
+                android:title="Add Contact"
+                android:tooltipText="Add Contact"
+                android:orderInCategory="14"
+                android:icon="@mipmap/ic_baseline_group_emp_add_24_round"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
+    <item android:id="@+id/item_menu_2"
+        android:title="Setting"
+        android:tooltipText="Setting"
+        android:orderInCategory="20"
+        android:icon="@mipmap/ic_baseline_settings_24_round"
+        app:showAsAction="always">
+        <menu>
+            <item android:id="@+id/sub_menu_21"
+                android:title="My Profile"
+                android:tooltipText="My Profile"
+                android:orderInCategory="21"
+                android:icon="@mipmap/ic_launcher_round"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sub_menu_22"
+                android:title="Logout"
+                android:tooltipText="Logout"
+                android:orderInCategory="22"
+                android:icon="@mipmap/ic_baseline_power_settings_new_24_round"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
+</menu>

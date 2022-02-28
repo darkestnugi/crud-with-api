@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ContactDetailActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10sp"
+            android:paddingRight="10sp"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/txtUCId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ID"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                android:visibility="gone"
+                />
+
+            <EditText
+                android:id="@+id/edtUCId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:inputType="number"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/txtUCName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUCName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUCEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUCEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUCPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Phone"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUCPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <Button
+                    android:id="@+id/btnCSave"
+                    android:layout_width="190sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#32CD32"
+                    android:text="Save"
+                    android:textColor="#ffffff"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    />
+
+                <Button
+                    android:id="@+id/btnCDel"
+                    android:layout_width="190sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Delete"
+                    android:background="#FF0000"
+                    android:textColor="#ffffff"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:layout_marginLeft="10sp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

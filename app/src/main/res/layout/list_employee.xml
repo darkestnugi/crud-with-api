@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgEView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="100dp"
+            android:minHeight="100dp"
+            android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            tools:text="Image" />
+
+        <TextView
+            android:id="@+id/txtEViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="ID"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtEViewNIK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="NIK" />
+
+        <TextView
+            android:id="@+id/txtEViewNIP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="NIP" />
+
+        <TextView
+            android:id="@+id/txtEViewEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Email" />
+
+        <TextView
+            android:id="@+id/txtEViewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/txtEViewPositionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Position" />
+
+        <TextView
+            android:id="@+id/txtEViewOfficeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Office" />
+
+        <TextView
+            android:id="@+id/txtEViewSalary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Salary" />
+
+        <TextView
+            android:id="@+id/txtEViewPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Photo" />
+
+        <TextView
+            android:id="@+id/txtEViewPhotoURL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Photo URL" />
+
+        <TextView
+            android:id="@+id/txtEProvinceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="Province" />
+
+        <TextView
+            android:id="@+id/txtECityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            tools:text="City" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

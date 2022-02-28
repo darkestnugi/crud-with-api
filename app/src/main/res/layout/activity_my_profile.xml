@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyProfileActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/txtLatitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Latitude"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtULatitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtLongitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Longitude"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtULongitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtAltitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Altitude"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtUAltitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtUAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="None"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="false"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtProvider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Provider"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtUProvider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="None"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <TextView
+            android:id="@+id/txtUError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

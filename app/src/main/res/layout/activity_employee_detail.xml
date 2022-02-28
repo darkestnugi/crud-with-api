@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EmployeeDetailActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10sp"
+            android:paddingRight="10sp"
+            tools:ignore="MissingConstraints">
+
+            <ImageView
+                android:id="@+id/imageUEDownload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5sp"
+                />
+
+            <TextView
+                android:id="@+id/txtUEId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ID"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                android:visibility="gone"
+                />
+
+            <EditText
+                android:id="@+id/edtUEId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:inputType="text"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/txtUENIK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NIK"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUENIK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUENIP"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NIP"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUENIP"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUEEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUEEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUEName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <EditText
+                android:id="@+id/edtUEName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtUEPosition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Position"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <Spinner
+                android:id="@+id/spinnerUEPosition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                />
+
+            <TextView
+                android:id="@+id/txtUEOffice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Office"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <Spinner
+                android:id="@+id/spinnerUEOffice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                />
+
+            <TextView
+                android:id="@+id/txtUESalary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Salary"
+                android:textSize="20sp"
+                android:layout_marginTop="5sp"
+                android:digits="0123456789,"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:id="@+id/edtUESalary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:digits="0123456789."
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/txtPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Photo"
+                android:textSize="20sp"
+                android:layout_marginTop="5sp"
+                android:digits="0123456789,"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:id="@+id/edtUEPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:enabled="false"
+                />
+
+            <TextView
+                android:id="@+id/txtPhotoURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Photo URL"
+                android:textSize="20sp"
+                android:layout_marginTop="5sp"
+                android:digits="0123456789,"
+                android:maxLength="255"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:id="@+id/edtUEPhotoURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:enabled="false"
+                />
+
+            <TextView
+                android:id="@+id/txtUEProvince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Province"
+                android:textSize="20sp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5sp"
+                />
+
+            <Spinner
+                android:id="@+id/spinnerUEProvince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                />
+
+            <TextView
+                android:id="@+id/txtUECity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="City"
+                android:textSize="20dp"
+                android:maxLength="255"
+                android:singleLine="true"
+                android:layout_marginTop="5dp"
+                />
+
+            <Spinner
+                android:id="@+id/spinnerUECity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <Button
+                    android:id="@+id/btnESave"
+                    android:layout_width="125sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#32CD32"
+                    android:text="Save"
+                    android:textColor="#ffffff"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    />
+
+                <Button
+                    android:id="@+id/btnEUpload"
+                    android:layout_width="125sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#000FFF"
+                    android:text="Upload"
+                    android:textColor="#ffffff"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:layout_marginLeft="5sp"
+                    />
+
+                <Button
+                    android:id="@+id/btnEDel"
+                    android:layout_width="125sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Delete"
+                    android:background="#FF0000"
+                    android:textColor="#ffffff"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:layout_marginLeft="5sp"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

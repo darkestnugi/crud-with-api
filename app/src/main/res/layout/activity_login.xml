@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/txtUEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Username/Email"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <EditText
+            android:id="@+id/edtUEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="255"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            />
+
+        <TextView
+            android:id="@+id/txtUPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <EditText
+            android:id="@+id/edtUPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="255"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            />
+
+        <TextView
+            android:id="@+id/txtUError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:maxLength="255"
+            android:singleLine="true"
+            android:layout_marginTop="5sp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <Button
+                android:id="@+id/btnULogin"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#32CD32"
+                android:text="Login"
+                android:textColor="#ffffff"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

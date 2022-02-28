@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CRUD API</string>
+    <string name="is_use_api">No</string>
+
+    <string name="item_menu_1">Employee</string>
+    <string name="sub_menu">Employee Task</string>
+    <string name="sub_menu_1">Add Employee</string>
+</resources>
