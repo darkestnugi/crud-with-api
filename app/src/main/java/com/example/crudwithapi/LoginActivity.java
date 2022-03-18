@@ -1,6 +1,7 @@
 package com.example.crudwithapi;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.example.crudwithapi.remote.EmployeeService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,24 +61,15 @@ public class LoginActivity extends AppCompatActivity {
     private employee temp_employee;
 
     private EmployeeService employeeService;
-
     private PreferenceManager prefManager;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Picasso myotherpicasso;
+    private Context myContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Thread.setDefaultUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException (Thread thread, Throwable e) {
-                        handleUncaughtException (thread, e);
-                    }
-                });
-
-        mAuth = FirebaseAuth.getInstance();
-        prefManager = new PreferenceManager(this);
         setContentView(R.layout.activity_login);
 
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -118,6 +111,10 @@ public class LoginActivity extends AppCompatActivity {
                     ACCESS_COARSE_LOCATION_CODE,
                     Manifest.permission.ACCESS_COARSE_LOCATION);
         }
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(myContext);
+        prefManager = new PreferenceManager(this);
 
         setTitle("Login To CRUD API");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);

@@ -1,6 +1,7 @@
 package com.example.crudwithapi;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -20,8 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.crudwithapi.helper.ContactDBHelper;
 import com.example.crudwithapi.model.contact;
 import com.example.crudwithapi.preference.PreferenceManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.UUID;
 
@@ -48,31 +51,14 @@ public class ContactDetailActivity extends AppCompatActivity {
 
     private PreferenceManager prefManager;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Picasso myotherpicasso;
+    private Context myContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Thread.setDefaultUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException (Thread thread, Throwable e) {
-                        handleUncaughtException (thread, e);
-                    }
-                });
-
-        mAuth = FirebaseAuth.getInstance();
-        prefManager = new PreferenceManager(this);
         setContentView(R.layout.activity_contact_detail);
-
-        if (prefManager.getMyID() == null){
-            Intent intent = new Intent(ContactDetailActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
-
-        contactDBHelper = new ContactDBHelper(ContactDetailActivity.this, null, null, 1);
 
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             EasyPermissions.requestPermissions(
@@ -113,6 +99,19 @@ public class ContactDetailActivity extends AppCompatActivity {
                     ACCESS_COARSE_LOCATION_CODE,
                     Manifest.permission.ACCESS_COARSE_LOCATION);
         }
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(myContext);
+        prefManager = new PreferenceManager(this);
+
+        if (prefManager.getMyID() == null){
+            Intent intent = new Intent(ContactDetailActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        contactDBHelper = new ContactDBHelper(ContactDetailActivity.this, null, null, 1);
 
         setTitle("Detail");
         getSupportActionBar().setHomeButtonEnabled(true);

@@ -1,8 +1,10 @@
 package com.example.crudwithapi;
 import com.example.crudwithapi.adapter.EmployeeAdapter;
 import com.example.crudwithapi.preference.PreferenceManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -57,29 +59,14 @@ public class MyProfileActivity extends AppCompatActivity implements LocationList
 
     private PreferenceManager prefManager;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Picasso myotherpicasso;
+    private Context myContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Thread.setDefaultUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException (Thread thread, Throwable e) {
-                        handleUncaughtException (thread, e);
-                    }
-                });
-
-        mAuth = FirebaseAuth.getInstance();
-        prefManager = new PreferenceManager(this);
         setContentView(R.layout.activity_my_profile);
-
-        if (prefManager.getMyID() == null){
-            Intent intent = new Intent(MyProfileActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
 
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             EasyPermissions.requestPermissions(
@@ -119,6 +106,17 @@ public class MyProfileActivity extends AppCompatActivity implements LocationList
                     getString(R.string.app_name),
                     ACCESS_COARSE_LOCATION_CODE,
                     Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(myContext);
+        prefManager = new PreferenceManager(this);
+
+        if (prefManager.getMyID() == null){
+            Intent intent = new Intent(MyProfileActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
 
         latitudeField = (TextView) findViewById(R.id.txtULatitude);

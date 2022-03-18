@@ -1,6 +1,7 @@
 package com.example.crudwithapi;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,6 +37,7 @@ import com.example.crudwithapi.remote.APIUtils;
 import com.example.crudwithapi.remote.BitMapTransform;
 import com.example.crudwithapi.remote.EmployeeService;
 import com.example.crudwithapi.remote.FileUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -124,38 +126,21 @@ public class EmployeeDetailActivity extends AppCompatActivity {
     private List<province> list_province = new ArrayList<province>();
     private List<city> list_city = new ArrayList<city>();
 
-    private EmployeeService employeeService;
-    private Picasso mypicasso;
-
     private Button btnESave;
     private Button btnEDel;
     private Button btnEUpload;
 
+    private EmployeeService employeeService;
     private PreferenceManager prefManager;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Picasso myotherpicasso;
+    private Context myContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Thread.setDefaultUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException (Thread thread, Throwable e) {
-                        handleUncaughtException (thread, e);
-                    }
-                });
-
-        mAuth = FirebaseAuth.getInstance();
-        prefManager = new PreferenceManager(this);
         setContentView(R.layout.activity_employee_detail);
-
-        if (prefManager.getMyID() == null){
-            Intent intent = new Intent(EmployeeDetailActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
 
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             EasyPermissions.requestPermissions(
@@ -197,6 +182,17 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(myContext);
+        prefManager = new PreferenceManager(this);
+
+        if (prefManager.getMyID() == null){
+            Intent intent = new Intent(EmployeeDetailActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+
         setTitle("Detail");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -223,7 +219,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         btnEUpload = (Button) findViewById(R.id.btnEUpload);
 
         employeeService = APIUtils.getEmployeeService1();
-        mypicasso = new Picasso.Builder(this)
+        myotherpicasso = new Picasso.Builder(this)
                 .listener(new Picasso.Listener() {
                     @Override
                     public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
@@ -300,7 +296,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         try {
             if (getString(R.string.is_use_api).equals("Yes")) {
                 if (employeePhoto != null && employeePhoto.trim().length() > 0) {
-                    mypicasso
+                    myotherpicasso
                             .load(API_URL + "Files/" + employeePhoto)
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .networkPolicy(NetworkPolicy.NO_CACHE)
@@ -311,7 +307,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
 
                     edtUEPhotoURL.setText(API_URL + "Files/" + employeePhoto);
                 } else {
-                    mypicasso
+                    myotherpicasso
                             .load(imageUrl)
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .networkPolicy(NetworkPolicy.NO_CACHE)
@@ -332,7 +328,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri downloadUrl) {
-                                    mypicasso
+                                    myotherpicasso
                                             .load(downloadUrl)
                                             //.memoryPolicy(MemoryPolicy.NO_CACHE)
                                             //.networkPolicy(NetworkPolicy.NO_CACHE)
@@ -347,7 +343,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
-                                    mypicasso
+                                    myotherpicasso
                                             .load(imageUrl)
                                             //.memoryPolicy(MemoryPolicy.NO_CACHE)
                                             //.networkPolicy(NetworkPolicy.NO_CACHE)
@@ -360,7 +356,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    mypicasso
+                    myotherpicasso
                             .load(imageUrl)
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .networkPolicy(NetworkPolicy.NO_CACHE)
@@ -752,7 +748,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
             }
 
             String employeeId = edtUEId.getText().toString().trim();
-            if (employeeId != null && employeeId.length() > 0) {
+            if (file != null && employeeId != null && employeeId.length() > 0) {
                 String filename = (String) DateFormat.format("yyyyMMdd_hhmmss_a", new Date());
                 String extension = (API_URL + "Files/" + file.getName()).substring((API_URL + "Files/" + file.getName()).lastIndexOf("."));
 
@@ -917,7 +913,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
 
                             if (response.isSuccessful()) {
                                 if ((filename + extension) != null && (filename + extension).trim().length() > 0) {
-                                    mypicasso
+                                    myotherpicasso
                                             .load(API_URL + "Files/" + filename + extension)
                                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                                             .networkPolicy(NetworkPolicy.NO_CACHE)
@@ -969,7 +965,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                             @Override
                                             public void onSuccess(Uri downloadUrl) {
-                                                mypicasso
+                                                myotherpicasso
                                                         .load(downloadUrl)
                                                         //.memoryPolicy(MemoryPolicy.NO_CACHE)
                                                         //.networkPolicy(NetworkPolicy.NO_CACHE)
@@ -985,7 +981,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception exception) {
-                                                mypicasso
+                                                myotherpicasso
                                                         .load(imageUrl)
                                                         //.memoryPolicy(MemoryPolicy.NO_CACHE)
                                                         //.networkPolicy(NetworkPolicy.NO_CACHE)
