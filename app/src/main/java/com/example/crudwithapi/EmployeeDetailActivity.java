@@ -758,7 +758,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                 }
             }
             else {
-                Toast.makeText(EmployeeDetailActivity.this, "employee id cannot empty!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EmployeeDetailActivity.this, "file not found!", Toast.LENGTH_SHORT).show();
             }
         }
     }

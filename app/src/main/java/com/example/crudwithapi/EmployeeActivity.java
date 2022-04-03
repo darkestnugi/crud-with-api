@@ -134,6 +134,7 @@ public class EmployeeActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
+        myContext = this;
         mAuth = FirebaseAuth.getInstance();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(myContext);
         prefManager = new PreferenceManager(this);
