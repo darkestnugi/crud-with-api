@@ -1,9 +1,20 @@
 package com.example.crudwithapi;
 import com.example.crudwithapi.adapter.EmployeeAdapter;
+import com.example.crudwithapi.model.employee;
+import com.example.crudwithapi.model.userfcmtoken;
 import com.example.crudwithapi.preference.PreferenceManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import android.Manifest;
@@ -14,13 +25,19 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import pub.devrel.easypermissions.EasyPermissions;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -97,6 +114,128 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Welcome, " + prefManager.getMyName());
         getSupportActionBar().setHomeButtonEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Fetching FCM registration token failed: " + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        Query databaseToken = FirebaseDatabase.getInstance().getReference("userfcmtoken").orderByChild("userID").equalTo(prefManager.getMyID());
+                        databaseToken.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                long count = dataSnapshot.getChildrenCount();
+                                userfcmtoken currUser = new userfcmtoken();
+
+                                if (count > 0) {
+                                    //iterating through all the nodes
+                                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                        //getting artist
+                                        userfcmtoken artist = postSnapshot.getValue(userfcmtoken.class);
+                                        if (artist.getToken().equals(token)) {
+                                            currUser = artist;
+                                        }
+                                    }
+
+                                    if (currUser.getToken() != null && !currUser.getToken().equals("") && currUser.getToken().length() > 0) {
+                                        DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
+                                                .getReference("userfcmtoken");
+
+                                        String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                                        String myip = prefManager.getLocalIpAddress(MainActivity.this);
+
+                                        currUser.setModifiedBy(prefManager.getMyName());
+                                        currUser.setModifiedPosition("home");
+                                        currUser.setModifiedDate(mydate);
+                                        currUser.setModifiedIP(myip);
+
+                                        dbuserfcmtoken
+                                                .child(currUser.getID())
+                                                .setValue(currUser);
+
+                                        prefManager.setMyFCMToken(token);
+                                    } else {
+                                        DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
+                                                .getReference("userfcmtoken");
+
+                                        String myID = dbuserfcmtoken.push().getKey();
+                                        String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                                        String myip = prefManager.getLocalIpAddress(MainActivity.this);
+
+                                        userfcmtoken u = new userfcmtoken(
+                                                myID,
+                                                prefManager.getMyID(),
+                                                prefManager.getMyFCMToken(),
+                                                prefManager.getMyName(),
+                                                myip,
+                                                "home",
+                                                mydate,
+                                                prefManager.getMyName(),
+                                                myip,
+                                                "home",
+                                                mydate,
+                                                null,
+                                                null,
+                                                null,
+                                                true
+                                        );
+
+                                        u.setID(myID);
+                                        dbuserfcmtoken
+                                                .child(myID)
+                                                .setValue(u);
+
+                                        prefManager.setMyFCMToken(token);
+                                    }
+                                } else {
+                                    DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
+                                            .getReference("userfcmtoken");
+
+                                    String myID = dbuserfcmtoken.push().getKey();
+                                    String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                                    String myip = prefManager.getLocalIpAddress(MainActivity.this);
+
+                                    userfcmtoken u = new userfcmtoken(
+                                            myID,
+                                            prefManager.getMyID(),
+                                            prefManager.getMyFCMToken(),
+                                            prefManager.getMyName(),
+                                            myip,
+                                            "home",
+                                            mydate,
+                                            prefManager.getMyName(),
+                                            myip,
+                                            "home",
+                                            mydate,
+                                            null,
+                                            null,
+                                            null,
+                                            true
+                                    );
+
+                                    u.setID(myID);
+                                    dbuserfcmtoken
+                                            .child(myID)
+                                            .setValue(u);
+
+                                    prefManager.setMyFCMToken(token);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    }
+                });
     }
 
     @Override

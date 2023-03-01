@@ -27,6 +27,7 @@ public class PreferenceManager {
     public static final String MyOffice = "MyOffice" ;
     public static final String MyProvince = "MyProvince" ;
     public static final String MyCity = "MyCity" ;
+    public static final String MyFCMToken = "MyFCMToken" ;
 
     public PreferenceManager(Context context) {
         this._context = context;
@@ -105,7 +106,16 @@ public class PreferenceManager {
     public String getMyCity() {
         return pref_global.getString(MyCity, null);
     }
-    
+
+    public void setMyFCMToken(String myFCMToken) {
+        editor.putString(MyFCMToken, myFCMToken);
+        editor.commit();
+    }
+
+    public String getMyFCMToken() {
+        return pref_global.getString(MyFCMToken, null);
+    }
+
     public void removeAllPreference()
     {
         editor.clear();

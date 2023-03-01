@@ -1,10 +1,15 @@
 package com.example.crudwithapi;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,22 +32,32 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.crudwithapi.helper.NotificationDismissedReceiver;
 import com.example.crudwithapi.model.city;
+import com.example.crudwithapi.model.data;
 import com.example.crudwithapi.model.employee;
+import com.example.crudwithapi.model.fcmobject;
+import com.example.crudwithapi.model.notification;
 import com.example.crudwithapi.model.office;
 import com.example.crudwithapi.model.position;
 import com.example.crudwithapi.model.province;
+import com.example.crudwithapi.model.usernotification;
 import com.example.crudwithapi.preference.PreferenceManager;
 import com.example.crudwithapi.remote.APIUtils;
 import com.example.crudwithapi.remote.BitMapTransform;
 import com.example.crudwithapi.remote.EmployeeService;
 import com.example.crudwithapi.remote.FileUtils;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.gson.Gson;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -55,10 +70,12 @@ import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -75,8 +92,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.storage.OnProgressListener;
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+
 import android.app.ProgressDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class EmployeeDetailActivity extends AppCompatActivity {
@@ -136,6 +160,8 @@ public class EmployeeDetailActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
     private Picasso myotherpicasso;
     private Context myContext;
+
+    private FirebaseFunctions mFunctions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -525,7 +551,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                deleteemployee(employeeId);
+                                deleteemployee(employeeId, employeeName);
 
                                 Intent intent = new Intent(EmployeeDetailActivity.this, EmployeeActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -798,6 +824,8 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     .child(myID)
                     .setValue(u);
 
+            addNotification("employee " + u.getName() + " created successfully!");
+
             Toast.makeText(EmployeeDetailActivity.this, "employee created successfully!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -836,11 +864,13 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     .child(id)
                     .setValue(u);
 
+            addNotification("employee " + u.getName() + " updated successfully!");
+
             Toast.makeText(EmployeeDetailActivity.this, "employee updated successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void deleteemployee(String id){
+    public void deleteemployee(String id, String name){
         if (getString(R.string.is_use_api).equals("Yes")) {
             Call<employee> call = employeeService.deleteEmployee(id);
             call.enqueue(new Callback<employee>() {
@@ -872,8 +902,110 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     .child(id)
                     .removeValue();
 
+            addNotification("employee " + name + " updated successfully!");
+
             Toast.makeText(EmployeeDetailActivity.this, "employee deleted successfully!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void addNotification(String msg) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Intent intent = new Intent(this, EmployeeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_IMMUTABLE);
+
+            String channelId = "employee_default_channel";
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Channel employee readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+
+            DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                    .getReference("usernotification");
+
+            String myID = dbusernotification.push().getKey();
+            String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            String myip = prefManager.getLocalIpAddress(EmployeeDetailActivity.this);
+
+            usernotification u = new usernotification();
+            u.setUserIDFrom(prefManager.getMyID());
+            u.setUserIDTo(prefManager.getMyID());
+            u.setChannelId(channelId);
+            u.setNotificationId(String.valueOf(3));
+            u.setMessage(msg);
+            u.setCreatedBy(prefManager.getMyName());
+            u.setCreatedIP(myip);
+            u.setCreatedPosition("home");
+            u.setCreatedDate(mydate);
+            u.setIsActive(true);
+
+            u.setID(myID);
+            dbusernotification
+                    .child(myID)
+                    .setValue(u);
+
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(this,
+                    channelId) // don't forget create a notification channel first
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(msg)
+                    .setAutoCancel(true)
+                    .setDeleteIntent(createOnDismissedIntent(this, 3, channelId, prefManager.getMyID(), myID, msg))
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
+
+            notificationManager.notify(3 /* ID of notification */, notification.build());
+        }
+    }
+
+    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String channelId, String userId, String msgId, String msg) {
+        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
+        intent.putExtra("notificationId", notificationId);
+        intent.putExtra("channelId", channelId);
+        intent.putExtra("userId", userId);
+        intent.putExtra("msgId", msgId);
+        intent.putExtra("msg", msg);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_ONE_SHOT);
+        return pendingIntent;
+    }
+
+    private Task<String> addnotif(String title, String desc) throws JSONException {
+        fcmobject input = new fcmobject();
+
+        notification notification = new notification();
+        notification.settitle(title);
+        notification.setbody(desc);
+
+        data data = new data();
+        data.setbody(desc);
+
+        input.settoken(prefManager.getMyFCMToken());
+        input.setnotification(notification);
+        input.setdata(data);
+
+        // Create the arguments to the callable function.
+        String jsonInString = new Gson().toJson(input);
+        JSONObject mJSONObject = new JSONObject(jsonInString);
+
+        return mFunctions
+                .getHttpsCallable("testNotif")
+                .call(mJSONObject)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        String result = (String) task.getResult().getData();
+                        Toast.makeText(EmployeeDetailActivity.this, "Message: " + result, Toast.LENGTH_SHORT).show();
+                        return result;
+                    }
+                });
     }
 
     public boolean uploadFile(String employeeId, String filename, String extension, Uri fileUri) {
