@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                             //getting artist
                                             userfcmtoken artist = postSnapshot.getValue(userfcmtoken.class);
-                                            if (artist.getToken().equals(token)) {
+                                            if (artist.getToken() != null && artist.getToken().length() > 0 && artist.getToken().equals(token)) {
                                                 currUser = artist;
                                             }
                                         }

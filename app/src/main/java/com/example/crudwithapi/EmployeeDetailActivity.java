@@ -951,6 +951,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
 
                 String myID = dbusernotification.push().getKey();
 
+                //-- notif buat yang lagi login sekarang --
                 usernotification u = new usernotification();
                 u.setUserIDFrom(prefManager.getMyID());
                 u.setUserIDTo(prefManager.getMyID());
@@ -962,6 +963,33 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                 u.setCreatedPosition("home");
                 u.setCreatedDate(mydate);
                 u.setIsActive(true);
+
+                u.setID(myID);
+                dbusernotification
+                        .child(myID)
+                        .setValue(u);
+
+                //-- notif buat admin --
+                myID = dbusernotification.push().getKey();
+                u.setUserIDTo("8EzWtMT08OUeqi8MweqRYX0KXFv1");
+
+                u.setID(myID);
+                dbusernotification
+                        .child(myID)
+                        .setValue(u);
+
+                //-- notif untuk andriyanto --
+                myID = dbusernotification.push().getKey();
+                u.setUserIDTo("c7Q8VcjpZqWrJITJAKIlaayDwdm1");
+
+                u.setID(myID);
+                dbusernotification
+                        .child(myID)
+                        .setValue(u);
+
+                //-- notif untuk mightyguy --
+                myID = dbusernotification.push().getKey();
+                u.setUserIDTo("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2");
 
                 u.setID(myID);
                 dbusernotification
