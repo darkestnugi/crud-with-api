@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -382,34 +384,36 @@ public class MainActivity extends AppCompatActivity {
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
 
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
             Query databaseusernotification = FirebaseDatabase.getInstance().getReference("usernotification").orderByChild("userIDTo").equalTo(prefManager.getMyID()).limitToLast(10);
             databaseusernotification.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String msgId = "";
-                    String msg = "";
-
                     if (dataSnapshot.getChildrenCount() > 0) {
                         //iterating through all the nodes
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             //getting artist
                             usernotification artist = postSnapshot.getValue(usernotification.class);
                             if (artist.getIsActive() && artist.getChannelId().equals(channelId)) {
-                                msgId = artist.getID();
-                                msg = artist.getMessage();
+                                String msgId = artist.getID();
+                                String msg = artist.getMessage();
+
+                                if (msgId != null && !msgId.equals("") && msgId.length() > 0) {
+                                    notificationManager.cancel(3);
+
+                                    NotificationCompat.Builder notification = new NotificationCompat.Builder(myContext, channelId)
+                                            .setSmallIcon(R.mipmap.ic_launcher_round)
+                                            .setContentTitle(getString(R.string.app_name))
+                                            .setContentText(msg)
+                                            .setAutoCancel(true)
+                                            .setSound(defaultSoundUri)
+                                            .setDeleteIntent(createOnDismissedIntent(myContext, 3, channelId, prefManager.getMyID(), msgId, msg))
+                                            .setContentIntent(pendingIntent);
+
+                                    notificationManager.notify(3, notification.build());
+                                }
                             }
-                        }
-
-                        if (msgId != null && !msgId.equals("") && msgId.length() > 0) {
-                            NotificationCompat.Builder notification = new NotificationCompat.Builder(myContext, channelId)
-                                    .setSmallIcon(R.mipmap.ic_launcher_round)
-                                    .setContentTitle(getString(R.string.app_name))
-                                    .setContentText(msg)
-                                    .setAutoCancel(true)
-                                    .setDeleteIntent(createOnDismissedIntent(myContext, 3, channelId, prefManager.getMyID(), msgId, msg))
-                                    .setContentIntent(pendingIntent);
-
-                            notificationManager.notify(3, notification.build());
                         }
                     }
                 }
@@ -429,6 +433,18 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("userId", userId);
         intent.putExtra("msgId", msgId);
         intent.putExtra("msg", msg);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Channel employee readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+
+            notificationManager.cancel(3);
+        }
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_ONE_SHOT);
         return pendingIntent;

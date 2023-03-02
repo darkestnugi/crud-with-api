@@ -970,31 +970,50 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                         .setValue(u);
 
                 //-- notif buat admin --
-                myID = dbusernotification.push().getKey();
-                u.setUserIDTo("8EzWtMT08OUeqi8MweqRYX0KXFv1");
+                if (!prefManager.getMyID().equals("8EzWtMT08OUeqi8MweqRYX0KXFv1")) {
+                    myID = dbusernotification.push().getKey();
+                    u.setUserIDTo("8EzWtMT08OUeqi8MweqRYX0KXFv1");
 
-                u.setID(myID);
-                dbusernotification
-                        .child(myID)
-                        .setValue(u);
+                    u.setID(myID);
+                    dbusernotification
+                            .child(myID)
+                            .setValue(u);
+                }
 
                 //-- notif untuk andriyanto --
-                myID = dbusernotification.push().getKey();
-                u.setUserIDTo("c7Q8VcjpZqWrJITJAKIlaayDwdm1");
+                if (!prefManager.getMyID().equals("c7Q8VcjpZqWrJITJAKIlaayDwdm1")) {
+                    myID = dbusernotification.push().getKey();
+                    u.setUserIDTo("c7Q8VcjpZqWrJITJAKIlaayDwdm1");
 
-                u.setID(myID);
-                dbusernotification
-                        .child(myID)
-                        .setValue(u);
+                    u.setID(myID);
+                    dbusernotification
+                            .child(myID)
+                            .setValue(u);
+                }
 
                 //-- notif untuk mightyguy --
-                myID = dbusernotification.push().getKey();
-                u.setUserIDTo("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2");
+                if (!prefManager.getMyID().equals("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2")) {
+                    myID = dbusernotification.push().getKey();
+                    u.setUserIDTo("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2");
 
-                u.setID(myID);
-                dbusernotification
-                        .child(myID)
-                        .setValue(u);
+                    u.setID(myID);
+                    dbusernotification
+                            .child(myID)
+                            .setValue(u);
+                }
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    String channelId = "employee_default_channel";
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    NotificationChannel channel = new NotificationChannel(channelId,
+                            "Channel employee readable title",
+                            NotificationManager.IMPORTANCE_DEFAULT);
+                    notificationManager.createNotificationChannel(channel);
+
+                    notificationManager.cancel(3);
+                }
             }
 
             @Override
