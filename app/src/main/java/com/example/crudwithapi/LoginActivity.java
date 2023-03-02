@@ -211,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     String uniqueID = UUID.randomUUID().toString();
                                     prefManager.setMyToken(uniqueID);
-                                    prefManager.setMyID(uniqueID);
+                                    prefManager.setMyID(user.getUid());
                                     prefManager.setMyName(email);
                                     prefManager.setMyEmail(email);
 

@@ -132,40 +132,76 @@ public class MainActivity extends AppCompatActivity {
                         // Get new FCM registration token
                         String token = task.getResult();
 
-                        Query databaseToken = FirebaseDatabase.getInstance().getReference("userfcmtoken").orderByChild("userID").equalTo(prefManager.getMyID());
-                        databaseToken.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                long count = dataSnapshot.getChildrenCount();
-                                userfcmtoken currUser = new userfcmtoken();
+                        if (token == null || token.equals("") || token.length() == 0) {
+                            Toast.makeText(MainActivity.this, "Fetching FCM registration token empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Query databaseToken = FirebaseDatabase.getInstance().getReference("userfcmtoken").orderByChild("userID").equalTo(prefManager.getMyID());
+                            databaseToken.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    long count = dataSnapshot.getChildrenCount();
+                                    userfcmtoken currUser = new userfcmtoken();
 
-                                if (count > 0) {
-                                    //iterating through all the nodes
-                                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                        //getting artist
-                                        userfcmtoken artist = postSnapshot.getValue(userfcmtoken.class);
-                                        if (artist.getToken().equals(token)) {
-                                            currUser = artist;
+                                    if (count > 0) {
+                                        //iterating through all the nodes
+                                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                            //getting artist
+                                            userfcmtoken artist = postSnapshot.getValue(userfcmtoken.class);
+                                            if (artist.getToken().equals(token)) {
+                                                currUser = artist;
+                                            }
                                         }
-                                    }
 
-                                    if (currUser.getToken() != null && !currUser.getToken().equals("") && currUser.getToken().length() > 0) {
-                                        DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
-                                                .getReference("userfcmtoken");
+                                        if (currUser.getToken() != null && !currUser.getToken().equals("") && currUser.getToken().length() > 0) {
+                                            DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
+                                                    .getReference("userfcmtoken");
 
-                                        String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                                        String myip = prefManager.getLocalIpAddress(MainActivity.this);
+                                            String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                                            String myip = prefManager.getLocalIpAddress(MainActivity.this);
 
-                                        currUser.setModifiedBy(prefManager.getMyName());
-                                        currUser.setModifiedPosition("home");
-                                        currUser.setModifiedDate(mydate);
-                                        currUser.setModifiedIP(myip);
+                                            currUser.setModifiedBy(prefManager.getMyName());
+                                            currUser.setModifiedPosition("home");
+                                            currUser.setModifiedDate(mydate);
+                                            currUser.setModifiedIP(myip);
 
-                                        dbuserfcmtoken
-                                                .child(currUser.getID())
-                                                .setValue(currUser);
+                                            dbuserfcmtoken
+                                                    .child(currUser.getID())
+                                                    .setValue(currUser);
 
-                                        prefManager.setMyFCMToken(token);
+                                            prefManager.setMyFCMToken(token);
+                                        } else {
+                                            DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
+                                                    .getReference("userfcmtoken");
+
+                                            String myID = dbuserfcmtoken.push().getKey();
+                                            String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                                            String myip = prefManager.getLocalIpAddress(MainActivity.this);
+
+                                            userfcmtoken u = new userfcmtoken(
+                                                    myID,
+                                                    prefManager.getMyID(),
+                                                    prefManager.getMyFCMToken(),
+                                                    prefManager.getMyName(),
+                                                    myip,
+                                                    "home",
+                                                    mydate,
+                                                    prefManager.getMyName(),
+                                                    myip,
+                                                    "home",
+                                                    mydate,
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    true
+                                            );
+
+                                            u.setID(myID);
+                                            dbuserfcmtoken
+                                                    .child(myID)
+                                                    .setValue(u);
+
+                                            prefManager.setMyFCMToken(token);
+                                        }
                                     } else {
                                         DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
                                                 .getReference("userfcmtoken");
@@ -199,51 +235,16 @@ public class MainActivity extends AppCompatActivity {
 
                                         prefManager.setMyFCMToken(token);
                                     }
-                                } else {
-                                    DatabaseReference dbuserfcmtoken = FirebaseDatabase.getInstance()
-                                            .getReference("userfcmtoken");
-
-                                    String myID = dbuserfcmtoken.push().getKey();
-                                    String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                                    String myip = prefManager.getLocalIpAddress(MainActivity.this);
-
-                                    userfcmtoken u = new userfcmtoken(
-                                            myID,
-                                            prefManager.getMyID(),
-                                            prefManager.getMyFCMToken(),
-                                            prefManager.getMyName(),
-                                            myip,
-                                            "home",
-                                            mydate,
-                                            prefManager.getMyName(),
-                                            myip,
-                                            "home",
-                                            mydate,
-                                            null,
-                                            null,
-                                            null,
-                                            true
-                                    );
-
-                                    u.setID(myID);
-                                    dbuserfcmtoken
-                                            .child(myID)
-                                            .setValue(u);
-
-                                    prefManager.setMyFCMToken(token);
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                     }
                 });
-
-        startOpenNotification();
     }
 
     @Override
@@ -266,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         }
+
+        startOpenNotification();
     }
 
     @Override

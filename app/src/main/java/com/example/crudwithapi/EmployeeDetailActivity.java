@@ -917,28 +917,6 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String myip = prefManager.getLocalIpAddress(EmployeeDetailActivity.this);
 
-        DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
-                .getReference("usernotification");
-
-        String myID = dbusernotification.push().getKey();
-
-        usernotification u = new usernotification();
-        u.setUserIDFrom(prefManager.getMyID());
-        u.setUserIDTo(prefManager.getMyID());
-        u.setChannelId(channelId);
-        u.setNotificationId(String.valueOf(3));
-        u.setMessage(msg);
-        u.setCreatedBy(prefManager.getMyName());
-        u.setCreatedIP(myip);
-        u.setCreatedPosition("home");
-        u.setCreatedDate(mydate);
-        u.setIsActive(true);
-
-        u.setID(myID);
-        dbusernotification
-                .child(myID)
-                .setValue(u);
-
         Query databaseusernotification = FirebaseDatabase.getInstance().getReference("usernotification").orderByChild("userIDTo").equalTo(prefManager.getMyID()).limitToLast(1000);
         databaseusernotification.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -967,6 +945,28 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                        .getReference("usernotification");
+
+                String myID = dbusernotification.push().getKey();
+
+                usernotification u = new usernotification();
+                u.setUserIDFrom(prefManager.getMyID());
+                u.setUserIDTo(prefManager.getMyID());
+                u.setChannelId(channelId);
+                u.setNotificationId(String.valueOf(3));
+                u.setMessage(msg);
+                u.setCreatedBy(prefManager.getMyName());
+                u.setCreatedIP(myip);
+                u.setCreatedPosition("home");
+                u.setCreatedDate(mydate);
+                u.setIsActive(true);
+
+                u.setID(myID);
+                dbusernotification
+                        .child(myID)
+                        .setValue(u);
             }
 
             @Override
@@ -975,6 +975,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
             }
         });
     }
+
     private Task<String> addnotif(String title, String desc) throws JSONException {
         fcmobject input = new fcmobject();
 
