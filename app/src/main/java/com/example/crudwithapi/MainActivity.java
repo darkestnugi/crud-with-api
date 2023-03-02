@@ -1,7 +1,9 @@
 package com.example.crudwithapi;
 import com.example.crudwithapi.adapter.EmployeeAdapter;
+import com.example.crudwithapi.helper.NotificationDismissedReceiver;
 import com.example.crudwithapi.model.employee;
 import com.example.crudwithapi.model.userfcmtoken;
+import com.example.crudwithapi.model.usernotification;
 import com.example.crudwithapi.preference.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -18,6 +20,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -236,6 +242,8 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+
+        startOpenNotification();
     }
 
     @Override
@@ -351,6 +359,76 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void startOpenNotification() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Context myContext = this;
+            PreferenceManager prefManager = new PreferenceManager(myContext);
+
+            Intent intent = new Intent(myContext, EmployeeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(myContext, 0 /* Request code */, intent, PendingIntent.FLAG_IMMUTABLE);
+
+            String channelId = "employee_default_channel";
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Channel employee readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+
+            Query databaseusernotification = FirebaseDatabase.getInstance().getReference("usernotification").orderByChild("userIDTo").equalTo(prefManager.getMyID()).limitToLast(10);
+            databaseusernotification.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String msgId = "";
+                    String msg = "";
+
+                    if (dataSnapshot.getChildrenCount() > 0) {
+                        //iterating through all the nodes
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            //getting artist
+                            usernotification artist = postSnapshot.getValue(usernotification.class);
+                            if (artist.getIsActive() && artist.getChannelId().equals(channelId)) {
+                                msgId = artist.getID();
+                                msg = artist.getMessage();
+                            }
+                        }
+
+                        if (msgId != null && !msgId.equals("") && msgId.length() > 0) {
+                            NotificationCompat.Builder notification = new NotificationCompat.Builder(myContext, channelId)
+                                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                                    .setContentTitle(getString(R.string.app_name))
+                                    .setContentText(msg)
+                                    .setAutoCancel(true)
+                                    .setDeleteIntent(createOnDismissedIntent(myContext, 3, channelId, prefManager.getMyID(), msgId, msg))
+                                    .setContentIntent(pendingIntent);
+
+                            notificationManager.notify(3, notification.build());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //Do something?
+                }
+            });
+        }
+    }
+
+    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String channelId, String userId, String msgId, String msg) {
+        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
+        intent.putExtra("notificationId", notificationId);
+        intent.putExtra("channelId", channelId);
+        intent.putExtra("userId", userId);
+        intent.putExtra("msgId", msgId);
+        intent.putExtra("msg", msg);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_ONE_SHOT);
+        return pendingIntent;
     }
 
     boolean doubleBackToExitPressedOnce = false;

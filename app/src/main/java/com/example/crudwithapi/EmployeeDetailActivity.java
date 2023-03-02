@@ -52,8 +52,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
@@ -902,78 +906,75 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     .child(id)
                     .removeValue();
 
-            addNotification("employee " + name + " updated successfully!");
+            addNotification("employee " + name + " deleted successfully!");
 
             Toast.makeText(EmployeeDetailActivity.this, "employee deleted successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void addNotification(String msg) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            Intent intent = new Intent(this, EmployeeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_IMMUTABLE);
+        String channelId = "employee_default_channel";
+        String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        String myip = prefManager.getLocalIpAddress(EmployeeDetailActivity.this);
 
-            String channelId = "employee_default_channel";
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                .getReference("usernotification");
 
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel employee readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
+        String myID = dbusernotification.push().getKey();
 
-            DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
-                    .getReference("usernotification");
+        usernotification u = new usernotification();
+        u.setUserIDFrom(prefManager.getMyID());
+        u.setUserIDTo(prefManager.getMyID());
+        u.setChannelId(channelId);
+        u.setNotificationId(String.valueOf(3));
+        u.setMessage(msg);
+        u.setCreatedBy(prefManager.getMyName());
+        u.setCreatedIP(myip);
+        u.setCreatedPosition("home");
+        u.setCreatedDate(mydate);
+        u.setIsActive(true);
 
-            String myID = dbusernotification.push().getKey();
-            String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-            String myip = prefManager.getLocalIpAddress(EmployeeDetailActivity.this);
+        u.setID(myID);
+        dbusernotification
+                .child(myID)
+                .setValue(u);
 
-            usernotification u = new usernotification();
-            u.setUserIDFrom(prefManager.getMyID());
-            u.setUserIDTo(prefManager.getMyID());
-            u.setChannelId(channelId);
-            u.setNotificationId(String.valueOf(3));
-            u.setMessage(msg);
-            u.setCreatedBy(prefManager.getMyName());
-            u.setCreatedIP(myip);
-            u.setCreatedPosition("home");
-            u.setCreatedDate(mydate);
-            u.setIsActive(true);
+        Query databaseusernotification = FirebaseDatabase.getInstance().getReference("usernotification").orderByChild("userIDTo").equalTo(prefManager.getMyID()).limitToLast(1000);
+        databaseusernotification.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getChildrenCount() > 0) {
+                    //iterating through all the nodes
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        //getting artist
+                        usernotification artist = postSnapshot.getValue(usernotification.class);
+                        if (artist.getIsActive() && artist.getChannelId().equals(channelId) && artist.getNotificationId().equals("3")) {
+                            DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                                    .getReference("usernotification");
 
-            u.setID(myID);
-            dbusernotification
-                    .child(myID)
-                    .setValue(u);
+                            artist.setChannelId(channelId);
+                            artist.setNotificationId(String.valueOf(3));
+                            artist.setMessage(msg);
+                            artist.setModifiedBy(prefManager.getMyName());
+                            artist.setModifiedIP(myip);
+                            artist.setModifiedPosition("home");
+                            artist.setModifiedDate(mydate);
+                            artist.setIsActive(false);
 
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(this,
-                    channelId) // don't forget create a notification channel first
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(msg)
-                    .setAutoCancel(true)
-                    .setDeleteIntent(createOnDismissedIntent(this, 3, channelId, prefManager.getMyID(), myID, msg))
-                    .setSound(defaultSoundUri)
-                    .setContentIntent(pendingIntent);
+                            dbusernotification
+                                    .child(artist.getID())
+                                    .setValue(artist);
+                        }
+                    }
+                }
+            }
 
-            notificationManager.notify(3 /* ID of notification */, notification.build());
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Do something?
+            }
+        });
     }
-
-    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String channelId, String userId, String msgId, String msg) {
-        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
-        intent.putExtra("notificationId", notificationId);
-        intent.putExtra("channelId", channelId);
-        intent.putExtra("userId", userId);
-        intent.putExtra("msgId", msgId);
-        intent.putExtra("msg", msg);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_ONE_SHOT);
-        return pendingIntent;
-    }
-
     private Task<String> addnotif(String title, String desc) throws JSONException {
         fcmobject input = new fcmobject();
 

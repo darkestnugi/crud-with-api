@@ -25,35 +25,37 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
         String msgId = intent.getExtras().getString("msgId");
         String msg = intent.getExtras().getString("msg");
 
-        PreferenceManager prefManager = new PreferenceManager(context);
-        DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
-                .getReference("usernotification");
+        if (msgId != null && !msgId.equals("") && msgId.length() > 0) {
+            PreferenceManager prefManager = new PreferenceManager(context);
+            DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                    .getReference("usernotification");
 
-        String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String myip = prefManager.getLocalIpAddress(context);
+            String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            String myip = prefManager.getLocalIpAddress(context);
 
-        usernotification u = new usernotification();
-        u.setUserIDFrom(prefManager.getMyID());
-        u.setUserIDTo(prefManager.getMyID());
-        u.setChannelId(channelId);
-        u.setNotificationId(String.valueOf(notificationId));
-        u.setMessage(msg);
-        u.setCreatedBy(prefManager.getMyName());
-        u.setCreatedIP(myip);
-        u.setCreatedPosition("home");
-        u.setCreatedDate(mydate);
-        u.setModifiedBy(prefManager.getMyName());
-        u.setModifiedIP(myip);
-        u.setModifiedPosition("home");
-        u.setModifiedDate(mydate);
-        u.setIsActive(false);
+            usernotification u = new usernotification();
+            u.setUserIDFrom(prefManager.getMyID());
+            u.setUserIDTo(prefManager.getMyID());
+            u.setChannelId(channelId);
+            u.setNotificationId(String.valueOf(notificationId));
+            u.setMessage(msg);
+            u.setCreatedBy(prefManager.getMyName());
+            u.setCreatedIP(myip);
+            u.setCreatedPosition("home");
+            u.setCreatedDate(mydate);
+            u.setModifiedBy(prefManager.getMyName());
+            u.setModifiedIP(myip);
+            u.setModifiedPosition("home");
+            u.setModifiedDate(mydate);
+            u.setIsActive(false);
 
-        u.setID(msgId);
-        dbusernotification
-                .child(msgId)
-                .setValue(u);
+            u.setID(msgId);
+            dbusernotification
+                    .child(msgId)
+                    .setValue(u);
 
-        /* Your code to handle the event here */
-        Toast.makeText(context, "message '" + msgId + "' is closed by '" + userId + "'!", Toast.LENGTH_SHORT).show();
+            /* Your code to handle the event here */
+            //Toast.makeText(context, "message '" + msgId + "' is closed!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
