@@ -105,6 +105,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class EmployeeDetailActivity extends AppCompatActivity {
@@ -913,114 +914,66 @@ public class EmployeeDetailActivity extends AppCompatActivity {
     }
 
     private void addNotification(String msg) {
-        String channelId = "employee_default_channel";
+        String channelId = "foreground_default_channel";
+        Integer notificationId = ThreadLocalRandom.current().nextInt(1000000, 9999999);
         String mydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String myip = prefManager.getLocalIpAddress(EmployeeDetailActivity.this);
 
-        Query databaseusernotification = FirebaseDatabase.getInstance().getReference("usernotification").orderByChild("userIDTo").equalTo(prefManager.getMyID()).limitToLast(1000);
-        databaseusernotification.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getChildrenCount() > 0) {
-                    //iterating through all the nodes
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        //getting artist
-                        usernotification artist = postSnapshot.getValue(usernotification.class);
-                        if (artist.getIsActive() && artist.getChannelId().equals(channelId) && artist.getNotificationId().equals("3")) {
-                            DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
-                                    .getReference("usernotification");
+        DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
+                .getReference("usernotification");
 
-                            artist.setChannelId(channelId);
-                            artist.setNotificationId(String.valueOf(3));
-                            artist.setMessage(msg);
-                            artist.setModifiedBy(prefManager.getMyName());
-                            artist.setModifiedIP(myip);
-                            artist.setModifiedPosition("home");
-                            artist.setModifiedDate(mydate);
-                            artist.setIsActive(false);
+        String myID = dbusernotification.push().getKey();
 
-                            dbusernotification
-                                    .child(artist.getID())
-                                    .setValue(artist);
-                        }
-                    }
-                }
+        //-- notif buat yang lagi login sekarang --
+        usernotification u = new usernotification();
+        u.setUserIDFrom(prefManager.getMyID());
+        u.setUserIDTo(prefManager.getMyID());
+        u.setChannelId(channelId);
+        u.setNotificationId(String.valueOf(notificationId));
+        u.setMessage(msg);
+        u.setCreatedBy(prefManager.getMyName());
+        u.setCreatedIP(myip);
+        u.setCreatedPosition("home");
+        u.setCreatedDate(mydate);
+        u.setIsActive(true);
 
-                DatabaseReference dbusernotification = FirebaseDatabase.getInstance()
-                        .getReference("usernotification");
+        u.setID(myID);
+        dbusernotification
+                .child(myID)
+                .setValue(u);
 
-                String myID = dbusernotification.push().getKey();
+        //-- notif buat admin --
+        if (!prefManager.getMyID().equals("8EzWtMT08OUeqi8MweqRYX0KXFv1")) {
+            myID = dbusernotification.push().getKey();
+            u.setUserIDTo("8EzWtMT08OUeqi8MweqRYX0KXFv1");
 
-                //-- notif buat yang lagi login sekarang --
-                usernotification u = new usernotification();
-                u.setUserIDFrom(prefManager.getMyID());
-                u.setUserIDTo(prefManager.getMyID());
-                u.setChannelId(channelId);
-                u.setNotificationId(String.valueOf(3));
-                u.setMessage(msg);
-                u.setCreatedBy(prefManager.getMyName());
-                u.setCreatedIP(myip);
-                u.setCreatedPosition("home");
-                u.setCreatedDate(mydate);
-                u.setIsActive(true);
+            u.setID(myID);
+            dbusernotification
+                    .child(myID)
+                    .setValue(u);
+        }
 
-                u.setID(myID);
-                dbusernotification
-                        .child(myID)
-                        .setValue(u);
+        //-- notif untuk andriyanto --
+        if (!prefManager.getMyID().equals("c7Q8VcjpZqWrJITJAKIlaayDwdm1")) {
+            myID = dbusernotification.push().getKey();
+            u.setUserIDTo("c7Q8VcjpZqWrJITJAKIlaayDwdm1");
 
-                //-- notif buat admin --
-                if (!prefManager.getMyID().equals("8EzWtMT08OUeqi8MweqRYX0KXFv1")) {
-                    myID = dbusernotification.push().getKey();
-                    u.setUserIDTo("8EzWtMT08OUeqi8MweqRYX0KXFv1");
+            u.setID(myID);
+            dbusernotification
+                    .child(myID)
+                    .setValue(u);
+        }
 
-                    u.setID(myID);
-                    dbusernotification
-                            .child(myID)
-                            .setValue(u);
-                }
+        //-- notif untuk mightyguy --
+        if (!prefManager.getMyID().equals("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2")) {
+            myID = dbusernotification.push().getKey();
+            u.setUserIDTo("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2");
 
-                //-- notif untuk andriyanto --
-                if (!prefManager.getMyID().equals("c7Q8VcjpZqWrJITJAKIlaayDwdm1")) {
-                    myID = dbusernotification.push().getKey();
-                    u.setUserIDTo("c7Q8VcjpZqWrJITJAKIlaayDwdm1");
-
-                    u.setID(myID);
-                    dbusernotification
-                            .child(myID)
-                            .setValue(u);
-                }
-
-                //-- notif untuk mightyguy --
-                if (!prefManager.getMyID().equals("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2")) {
-                    myID = dbusernotification.push().getKey();
-                    u.setUserIDTo("r9X6MVR6F0Z8MfVYFhn7Li0VXDV2");
-
-                    u.setID(myID);
-                    dbusernotification
-                            .child(myID)
-                            .setValue(u);
-                }
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    String channelId = "employee_default_channel";
-                    NotificationManager notificationManager =
-                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                    NotificationChannel channel = new NotificationChannel(channelId,
-                            "Channel employee readable title",
-                            NotificationManager.IMPORTANCE_DEFAULT);
-                    notificationManager.createNotificationChannel(channel);
-
-                    notificationManager.cancel(3);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //Do something?
-            }
-        });
+            u.setID(myID);
+            dbusernotification
+                    .child(myID)
+                    .setValue(u);
+        }
     }
 
     private Task<String> addnotif(String title, String desc) throws JSONException {
