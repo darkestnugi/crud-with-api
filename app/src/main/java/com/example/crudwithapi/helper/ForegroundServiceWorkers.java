@@ -52,7 +52,7 @@ public class ForegroundServiceWorkers extends Worker {
         channelId = "foreground_default_channel";
         defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (prefManager != null && prefManager.getMyID() != null && !prefManager.getMyID().equals("") && prefManager.getMyID().length() > 0 && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
             channel = new NotificationChannel(
