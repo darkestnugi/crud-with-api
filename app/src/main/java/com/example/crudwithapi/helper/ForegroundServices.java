@@ -52,20 +52,11 @@ public class ForegroundServices  extends Service {
         prefManager = new PreferenceManager(myContext);
         title = myContext.getString(R.string.app_name);
         channelId = "foreground_default_channel";
+        notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
         defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if (prefManager != null && prefManager.getMyID() != null && !prefManager.getMyID().equals("") && prefManager.getMyID().length() > 0 && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            channel = new NotificationChannel(
-                    channelId,
-                    "Channel notification for donation",
-                    NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channel);
-
-            NotificationDismissedReceiver nv = new NotificationDismissedReceiver();
-            startForegroundService();
-        }
+        startForegroundService();
+        startNotificationService();
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -74,16 +65,32 @@ public class ForegroundServices  extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | 0);
 
-        Notification notification = new NotificationCompat.Builder(this, channelId)
-                .setOngoing(true)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Aplikasi CRUD API sedang berjalan")
-                .setContentIntent(pendingIntent)
-                .build();
+        if (notificationManager != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(
+                    channelId,
+                    "Channel notification for employee",
+                    NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
 
-        startOpenNotification();
-        startForeground(1, notification);
+            Notification notification = new NotificationCompat.Builder(this, channelId)
+                    .setOngoing(true)
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText("Aplikasi CRUD API sedang berjalan")
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            startForeground(1, notification);
+        }
+    }
+
+    private void startNotificationService() {
+        if (notificationManager != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (prefManager != null && prefManager.getMyID() != null && !prefManager.getMyID().equals("") && prefManager.getMyID().length() > 0) {
+                NotificationDismissedReceiver nv = new NotificationDismissedReceiver();
+                startOpenNotification();
+            }
+        }
     }
 
     private void startOpenNotification() {

@@ -48,21 +48,21 @@ public class ForegroundServiceWorkers extends Worker {
         //call methods to perform background task
         myContext = this.getApplicationContext();
         title = myContext.getString(R.string.app_name);
-        notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
         channelId = "foreground_default_channel";
+        notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
         defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if (prefManager != null && prefManager.getMyID() != null && !prefManager.getMyID().equals("") && prefManager.getMyID().length() > 0 && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
+        if (notificationManager != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             channel = new NotificationChannel(
                     channelId,
                     "Channel notification for donation",
                     NotificationManager.IMPORTANCE_LOW);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationDismissedReceiver nv = new NotificationDismissedReceiver();
-            startOpenNotification();
+            if (prefManager != null && prefManager.getMyID() != null && !prefManager.getMyID().equals("") && prefManager.getMyID().length() > 0) {
+                NotificationDismissedReceiver nv = new NotificationDismissedReceiver();
+                startOpenNotification();
+            }
         }
 
         return Result.success ();
